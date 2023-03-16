@@ -1,0 +1,15 @@
+-- configuracao --
+pip install autopep8
+pip install pylint
+
+-- virtualenv --
+pip install virtualenv = instalar virtualenv
+virtualenv venv = criar um ambiente virtual na pasta venv
+
+-- freeze --
+pip freeze = verificar todos os pacotes do sistema e suas versões
+pip freeze -> requirements.txt = criar um arquivo com todos os pacotes
+
+-- fastapi --
+pip install fastapi
+pip install "uvicorn[standard]"
