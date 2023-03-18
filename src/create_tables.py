@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel
-from core.database import engine
+from infra.postgresql.config.database import engine
 
 
 async def create_tables() -> None:

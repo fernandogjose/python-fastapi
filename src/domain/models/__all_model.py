@@ -1,0 +1,1 @@
+from domain.models.aluno_model import AlunoModel
