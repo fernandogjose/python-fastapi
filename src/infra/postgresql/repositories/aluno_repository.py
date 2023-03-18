@@ -2,50 +2,33 @@ from typing import List
 from infra.postgresql.config.database import async_session
 from domain.models.aluno_model import AlunoModel
 from sqlmodel import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class AlunoRepository:
 
-    async def adicionar(aluno_adicionar: AlunoModel) -> AlunoModel:
-        async with async_session() as session:
-            session.add(aluno_adicionar)
-            await session.commit()
+    def __init__(self, async_session_request: AsyncSession = None):
+        self.async_session = async_session_request or async_session()
 
-            return aluno_adicionar
+    async def async_session_commit(self) -> None:
+        await self.async_session.commit()
+        await self.async_session.close()
 
-    async def deletar(aluno_deletar: AlunoModel) -> None:
-        async with async_session() as session:
-            await session.delete(aluno_deletar)
-            await session.commit()
+    async def adicionar(self, aluno_adicionar: AlunoModel) -> AlunoModel:
+        self.async_session.add(aluno_adicionar)
+        return aluno_adicionar
 
-    async def atualizar(aluno_atualizar: AlunoModel) -> AlunoModel:
-        async with async_session() as session:
-            query = select(AlunoModel).filter(
-                AlunoModel.id == aluno_atualizar.id)
-            query_result = await session.execute(query)
-            aluno_db: AlunoModel = query_result.scalar_one_or_none()
+    async def deletar(self, aluno_deletar: AlunoModel) -> None:
+        await self.async_session.delete(aluno_deletar)
 
-            if not aluno_db:
-                return None
+    async def obter_todos(self) -> List[AlunoModel]:
+        query = select(AlunoModel)
+        query_result = await self.async_session.execute(query)
+        alunos_response: List[AlunoModel] = query_result.scalars().all()
+        return alunos_response
 
-            aluno_db.nome = aluno_atualizar.nome
-            aluno_db.idade = aluno_atualizar.idade
-            aluno_db.turma_id = aluno_atualizar.turma_id
-            await session.commit()
-
-            return aluno_db
-
-    async def obter_todos() -> List[AlunoModel]:
-        async with async_session() as session:
-            query = select(AlunoModel)
-            query_result = await session.execute(query)
-            alunos_response: List[AlunoModel] = query_result.scalars().all()
-
-            return alunos_response
-
-    async def obter_por_aluno_id(aluno_id_obter: int) -> AlunoModel:
-        async with async_session() as session:
-            query = select(AlunoModel).filter(AlunoModel.id == aluno_id_obter)
-            query_result = await session.execute(query)
-            aluno_db: AlunoModel = query_result.scalar_one_or_none()
-            return aluno_db
+    async def obter_por_aluno_id(self, aluno_id_obter: int) -> AlunoModel:
+        query = select(AlunoModel).filter(AlunoModel.id == aluno_id_obter)
+        query_result = await self.async_session.execute(query)
+        aluno_db: AlunoModel = query_result.scalar_one_or_none()
+        return aluno_db
