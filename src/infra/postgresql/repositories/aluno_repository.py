@@ -3,16 +3,10 @@ from infra.postgresql.config.database import async_session
 from domain.models.aluno_model import AlunoModel
 from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from infra.postgresql.repositories.base_repository import BaseRepository
 
 
-class AlunoRepository:
-
-    def __init__(self, async_session_request: AsyncSession = None):
-        self.async_session = async_session_request or async_session()
-
-    async def async_session_commit(self) -> None:
-        await self.async_session.commit()
-        await self.async_session.close()
+class AlunoRepository(BaseRepository):
 
     async def adicionar(self, aluno_adicionar: AlunoModel) -> AlunoModel:
         self.async_session.add(aluno_adicionar)
