@@ -17,12 +17,13 @@ async def post(aluno_adicionar: AlunoModel):
 async def put(aluno_atualizar: AlunoModel):
     aluno_service: AlunoService = AlunoService()
     aluno_atualizado = await aluno_service.atualizar(aluno_atualizar)
-    
+
     if not aluno_atualizado:
         raise HTTPException(detail='Aluno não encontrado',
                             status_code=status.HTTP_404_NOT_FOUND)
 
     return aluno_atualizado
+
 
 @router.delete('/{aluno_id_deletar}', status_code=status.HTTP_202_ACCEPTED, response_model=int)
 async def delete(aluno_id_deletar: int):
